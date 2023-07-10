@@ -7,6 +7,8 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266HTTPClient.h>
 
+bool downloadAndDisplayImage(char *url, char *filename, byte method);
+
 void NOT_FOUND_API(void);
 
 void handleRoot(void);

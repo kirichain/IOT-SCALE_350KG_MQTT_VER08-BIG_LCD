@@ -11,7 +11,6 @@
 #include "Mqtt.h"
 #include "web.h"
 #include "eeprom.h"
-#include "json_img_render.h"
 
 var_all             var;
 lcd_tft             lcd;    //khai bao function
@@ -33,7 +32,7 @@ void setup()
   //Setup Io
 
   if (!Expander.begin(0x20, &Wire)) ESP.reset();
-  Serial.begin(9600);.l
+  Serial.begin(9600);
   Expander.pinMode(KEY_ENTER, INPUT);
   Expander.pinMode(KEY_UP, INPUT);
   Expander.pinMode(IN_SAMPLE, INPUT);
