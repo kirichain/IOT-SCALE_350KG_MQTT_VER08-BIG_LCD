@@ -133,20 +133,21 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
     // Clear image array
     memset(var.web.imageArray, 0, sizeof(var.web.imageArray));
     // Concatenate serverUrl and filename to get full URL
-    strcat(serverUrl, filename);
+    char _serverUrl[100] = serverUrl; 
+    strcat(_serverUrl, filename);
     // Print full URL to Serial
     Serial.print("Full URL: ");
-    Serial.println(serverUrl);
+    Serial.println(_serverUrl);
     switch (method) {
         case 0:
             // Using reading JSON string
             Serial.println("Downloading image data using JSON string...");
             Serial.print("URL: ");
-            Serial.println(serverUrl);
+            Serial.println(_serverUrl);
             Serial.print("Filename: ");
             Serial.println(filename);
 
-            if (http.begin(client, serverUrl)) {
+            if (http.begin(client, _serverUrl)) {
                 Serial.print("[HTTP] GET...\n");
                 // start connection and send HTTP header
                 int httpCode = http.GET();
@@ -245,11 +246,11 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
             // Using reading stream of bytes
             Serial.println("Downloading image data using stream of bytes...");
             Serial.print("URL: ");
-            Serial.println(serverUrl);
+            Serial.println(_serverUrl);
             Serial.print("Filename: ");
             Serial.println(filename);
 
-            if (http.begin(client, serverUrl)) {
+            if (http.begin(client, _serverUrl)) {
                 Serial.print("[HTTP] GET...\n");
                 // start connection and send HTTP header
                 int httpCode = http.GET();
