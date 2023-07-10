@@ -161,187 +161,179 @@
 #define CMD_I2C_SEND_PCS                               0X07
 #define CMD_I2C_EMPTY                                  0XFF
 
-typedef struct PLAN
-{
-  String  Country = "-";
-  String  Factory = "-";
-  String  Line = "-";
-  String  Location = "-";
-  String  Style = "-";
-  String  sProcess = "-";
-  String  ProcessId = "---";
-  String  WorkerId = "-";
+typedef struct PLAN {
+    String Country = "-";
+    String Factory = "-";
+    String Line = "-";
+    String Location = "-";
+    String Style = "-";
+    String sProcess = "-";
+    String ProcessId = "---";
+    String WorkerId = "-";
 } PLAN;
 /************************************************************************************************************************/
-typedef struct OTA
-{
-  String url = "-";
+typedef struct OTA {
+    String url = "-";
 } OTA;
 /************************************************************************************************************************/
 //Cau truc bien cua he thong
-typedef struct TIME
-{
-  bool      Int1 = 0;
-  bool      Int2 = 0;
-  uint16_t  t_year;
-  uint8_t   t_mon;
-  uint8_t   t_day;
-  uint8_t   t_hour;
-  uint8_t   t_min;
-  uint8_t   t_second;
-  uint8_t   t_old = 0;
+typedef struct TIME {
+    bool Int1 = 0;
+    bool Int2 = 0;
+    uint16_t t_year;
+    uint8_t t_mon;
+    uint8_t t_day;
+    uint8_t t_hour;
+    uint8_t t_min;
+    uint8_t t_second;
+    uint8_t t_old = 0;
 
-  uint8_t   Mqtt_Reconnect = 0;
-  uint16_t  Mqtt_Status = 0;
-  uint16_t  Machine_Time = 0;
+    uint8_t Mqtt_Reconnect = 0;
+    uint16_t Mqtt_Status = 0;
+    uint16_t Machine_Time = 0;
 
-  uint16_t  info_machine;
-  uint16_t  Cycle = 0;
-  bool      update_finish = 0;
+    uint16_t info_machine;
+    uint16_t Cycle = 0;
+    bool update_finish = 0;
 } TIME;
 
 //cau truc bien can cua LCD
-typedef struct LCD
-{
-  uint8_t   old_y_postion = 1;
-  uint8_t   y_postion = 0;
-  String    hardware;
-  String    software;
-  uint8_t   page = 0;
-  uint8_t   old_page = 1;
-  uint8_t   rotate = 1;
-  uint8_t   contrats;
-  uint8_t   code_monitor = 0;
-  bool      fontmode = 0;
-  bool      Fresh = 0;
-  //bool      Menu_Up = 0;
-  uint8_t   update_data = 0;
+typedef struct LCD {
+    uint8_t old_y_postion = 1;
+    uint8_t y_postion = 0;
+    String hardware;
+    String software;
+    uint8_t page = 0;
+    uint8_t old_page = 1;
+    uint8_t rotate = 1;
+    uint8_t contrats;
+    uint8_t code_monitor = 0;
+    bool fontmode = 0;
+    bool Fresh = 0;
+    //bool      Menu_Up = 0;
+    uint8_t update_data = 0;
 } LCD;
 /************************************************************************************************************************/
 //cau truc bien can cua WIFI
-typedef struct WIFI
-{
-  bool     STATUS;
-  String   ssid = "";
-  String   pass = "";
-  char     eepSsid[16];
-  char     eepPass[16];
-  uint8_t  Strenght;
-  uint8_t  Old_Strenght = 0;
-  uint8_t  Reconnect_count = 0;
-  String   Mac = "";
-  String   Mac_Ap = "";
+typedef struct WIFI {
+    bool STATUS;
+    String ssid = "Guest";
+    String pass = "24091995";
+    char eepSsid[16];
+    char eepPass[16];
+    uint8_t Strenght;
+    uint8_t Old_Strenght = 0;
+    uint8_t Reconnect_count = 0;
+    String Mac = "";
+    String Mac_Ap = "";
 } WIFI;
 /************************************************************************************************************************/
 //cau truc bien can cua MQTT
-typedef struct MQTT
-{
-  String   Address;
-  char     Array[16];
-  uint16_t Port;
-  uint16_t httpPort;
-  bool     Connected;
-  bool     Disconnect = 0;
+typedef struct MQTT {
+    String Address;
+    char Array[16];
+    uint16_t Port;
+    uint16_t httpPort;
+    bool Connected;
+    bool Disconnect = 0;
 } MQTT;
 /************************************************************************************************************************/
 //cau truc bien can cua SERVER
-typedef struct WEB
-{
-  String  codeHmi = "";
-  String  codeSuccess = "";
-  String  codeFail = "";
-  String  codeReset = "";
-  String  imageUrl = "";
-  bool    STATUS;
-  bool    Config = 0;
+typedef struct WEB {
+    String codeHmi = "";
+    String codeSuccess = "";
+    String codeFail = "";
+    String codeReset = "";
+    String imageUrl = "";
+    bool STATUS;
+    bool Config = 0;
+    // Array to store the image, image size is 100x100
+    uint16_t imageArray[14400] = {0};
+    char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+    char filename[10] = "arr";
 } WEB;
 /************************************************************************************************************************/
 //cau truc bien can cua MACHINE STATUS
-typedef struct MACHINE
-{
-  bool status_wifi;
-  uint8_t sProcess = PROCESS_EMPTY; //code process action
-  uint8_t Old_sProcess;
-  uint8_t sProcess_menu;//code
-  String  Ip;//Address machine IP
-  String Id;//Address machine ID
-  String Iot_code;//code machine Supplier
-  String Iot_model;//Model Iot
+typedef struct MACHINE {
+    bool status_wifi;
+    uint8_t sProcess = PROCESS_EMPTY; //code process action
+    uint8_t Old_sProcess;
+    uint8_t sProcess_menu;//code
+    String Ip;//Address machine IP
+    String Id;//Address machine ID
+    String Iot_code;//code machine Supplier
+    String Iot_model;//Model Iot
 } MACHINE;
 /************************************************************************************************************************/
-typedef struct LOAD
-{
-  bool pStatus = 0;
-  bool Change_Status;
+typedef struct LOAD {
+    bool pStatus = 0;
+    bool Change_Status;
 } LOAD;
 /************************************************************************************************************************/
 //cau truc bien can cua MODBUS RTU
-typedef struct MODBUS_RTU
-{
-  bool Status = 0;//Trang Thai On cua modbus
-  uint8_t IDslave = 1;
-  uint8_t Baurate;
-  uint8_t Format;
-  uint16_t Sv_Data = 75;
-  uint16_t Pv_Data = 30;
-  uint16_t Sv_Adr;
-  uint16_t Pv_Adr;
+typedef struct MODBUS_RTU {
+    bool Status = 0;//Trang Thai On cua modbus
+    uint8_t IDslave = 1;
+    uint8_t Baurate;
+    uint8_t Format;
+    uint16_t Sv_Data = 75;
+    uint16_t Pv_Data = 30;
+    uint16_t Sv_Adr;
+    uint16_t Pv_Adr;
 } MODBUS_RTU;
 /************************************************************************************************************************/
 //cau truc du lieu SENSOR
-typedef struct SENSOR_SCALE
-{
-  char      eep_po[30];
-  char      eep_style[30];
-  char      eep_group[30];
-  String    Barcode = "NONE";
-  String    Pocode = "NONE";
-  String    Style_Code = "NONE";
-  String    PackageGroup = "NONE";
-  String    st_weight_old = "0.00";
-  bool      Status = 0; //1 Error, 0 OK
-  bool      Pub = 0; //1 pub du lieu, 0 ko pub du lieu
-  bool      Check_begin = 0;
-  bool      Check_end = 0;
-  bool      Check = 0;//ung de kiem doc gia tri Weight_old
-  bool      pause_max = 0;//pause read Weight_max
-  uint8_t   Tolerance_p = 0; //Sai so cho phep duong
-  uint8_t   Tolerance_n = 0; //Sai so cho phep am
-  uint8_t   Box;
-  uint8_t   Box_max;
-  uint8_t   Counter = 0;
-  uint8_t   Pause_counter = 0;
-  uint16_t  Ok_Box = 0;
-  uint16_t  Ng_Box = 0;
-  uint16_t  Sum_box = 0;
-  uint16_t  Units = 1;
-  uint16_t  Pg_Qty = 0;
-  uint16_t  Po_Qty = 0;
-  uint32_t  old_time = 0;
-  float     Weight = 0;
-  float     Weight_old = 0;
-  float     Weight_max = 0;
-  float     Sample = 99;
-  float     delta = 0;
+typedef struct SENSOR_SCALE {
+    char eep_po[30];
+    char eep_style[30];
+    char eep_group[30];
+    String Barcode = "NONE";
+    String Pocode = "NONE";
+    String Style_Code = "NONE";
+    String PackageGroup = "NONE";
+    String st_weight_old = "0.00";
+    bool Status = 0; //1 Error, 0 OK
+    bool Pub = 0; //1 pub du lieu, 0 ko pub du lieu
+    bool Check_begin = 0;
+    bool Check_end = 0;
+    bool Check = 0;//ung de kiem doc gia tri Weight_old
+    bool pause_max = 0;//pause read Weight_max
+    uint8_t Tolerance_p = 0; //Sai so cho phep duong
+    uint8_t Tolerance_n = 0; //Sai so cho phep am
+    uint8_t Box;
+    uint8_t Box_max;
+    uint8_t Counter = 0;
+    uint8_t Pause_counter = 0;
+    uint16_t Ok_Box = 0;
+    uint16_t Ng_Box = 0;
+    uint16_t Sum_box = 0;
+    uint16_t Units = 1;
+    uint16_t Pg_Qty = 0;
+    uint16_t Po_Qty = 0;
+    uint32_t old_time = 0;
+    float Weight = 0;
+    float Weight_old = 0;
+    float Weight_max = 0;
+    float Sample = 99;
+    float delta = 0;
 } SENSOR_SCALE;
 /************************************************************************************************************************/
 //khai bao toan bo cau truc
-typedef struct
-{
-  struct PLAN Plan;
-  struct OTA  ota;
-  struct TIME sTime;
-  struct LCD  lcd;
-  struct WIFI wifi;
-  struct MQTT mqtt;
-  struct WEB web;
-  struct MACHINE   machine;
-  struct MODBUS_RTU   rtu;
-  struct SENSOR_SCALE   scale;
-  struct LOAD   sload;
+typedef struct {
+    struct PLAN Plan;
+    struct OTA ota;
+    struct TIME sTime;
+    struct LCD lcd;
+    struct WIFI wifi;
+    struct MQTT mqtt;
+    struct WEB web;
+    struct MACHINE machine;
+    struct MODBUS_RTU rtu;
+    struct SENSOR_SCALE scale;
+    struct LOAD sload;
 } var_all;
 /************************************************************************************************************************/
-extern var_all  var;
+extern var_all var;
 #endif
 /************************************************************************************************************************/
 /************************************************************************************************************************/

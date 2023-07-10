@@ -17,7 +17,6 @@ void wifi_function::wifi_init(void)
   WiFi.enableSTA(1);
   WiFi.setAutoConnect(true);    //add new at 05-09-2019
   WiFi.setAutoReconnect(true);
-  
 }
 /************************************************************************************************************************/
 String wifi_function::ssid(int chanel)

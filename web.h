@@ -7,8 +7,6 @@
 #include <ESP8266HTTPUpdateServer.h>
 #include <ESP8266HTTPClient.h>
 
-bool downloadAndDisplayImage(char *url, char *filename, byte method);
-
 void NOT_FOUND_API(void);
 
 void handleRoot(void);
@@ -27,6 +25,8 @@ bool Submit_Modbus(void);
 
 class web_function {
 public://co the goi bat ky dau
+    bool downloadImageData(char *serverUrl, char *filename, byte method);
+
     void Setup_Http(void);
 
     void Setup_Web(void);

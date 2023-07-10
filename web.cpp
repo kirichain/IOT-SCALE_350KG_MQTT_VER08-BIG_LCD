@@ -7,303 +7,6 @@ HTTPClient http;
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
 
-// Array to store the image, image size is 100x100
-uint16_t imageArray[20000] = {0};
-
-// function downloadImgData with params: (char *url, char *filename, byte method)
-bool downloadImgData(char *url, char *filename, byte method) {
-    // method variable is used to determine the way to read image data from server
-    // 0 means using reading JSON string, 1 means using reading stream of bytes
-    switch (method) {
-        case 0:
-            // Using reading JSON string
-            Serial.println("Downloading image data using JSON string...");
-            Serial.print("URL: ");
-            Serial.println(url);
-            Serial.print("Filename: ");
-            Serial.println(filename);
-            // Clear image array
-            memset(imageArray, 0, sizeof(imageArray));
-            if (http.begin(client, url)) {
-                Serial.print("[HTTP] GET...\n");
-                // start connection and send HTTP header
-                int httpCode = http.GET();
-
-                // httpCode will be negative on error
-                if (httpCode > 0) {
-                    // HTTP header has been send and Server response header has been handled
-                    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-                    tft.fillScreen(TFT_BLACK);
-                    tft.setTextColor(TFT_WHITE, TFT_BLACK);
-                    //Print http code on TFT
-                    tft.drawString("HTTP code: " + String(httpCode), 0, 0);
-                    // Waiting for 5 seconds, then make loading animation, then display the image
-                    delay(2000);
-                    tft.fillScreen(TFT_BLACK);
-                    // file found at server
-                    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-                        // get length of document (is -1 when Server sends no Content-Length header)
-                        int len = http.getSize();
-                        // Print size to Serial
-                        Serial.printf("Image Size: %d\n", len);
-                        // Get string payload, they are JSON objects
-                        String payload = http.getString();
-                        // Check if payload is empty
-                        if (payload.length() == 0) {
-                            Serial.println("Payload is empty");
-                        } else {
-                            Serial.println("Payload is not empty");
-                            // Print payload to Serial
-                            Serial.println(payload);
-                            // Get size of payload
-                            int payloadSize = payload.length();
-                            // Print payload size to Serial
-                            Serial.printf("Payload size: %d\n", payloadSize);
-                        }
-                        // Variable to count the number of bytes read
-                        int count = 0;
-                        WiFiClient *stream = http.getStreamPtr();
-                        // Stream& input;
-                        //DynamicJsonDocument doc(4096);
-                        // Parse JSON object
-                        //DeserializationError error = deserializeJson(doc, payload);
-                        //deserializeJson(doc, loggingStream);
-                        //if (error) {
-                        //    Serial.print(F("deserializeJson() failed: "));
-                        //    Serial.println(error.f_str());
-                        //}
-                        // Extract values
-                        //Serial.println(F("Response:"));
-                        //Serial.println(doc["data"].as<const char *>());
-                        // Buffer to read
-                        uint8_t buff[128] = {0};
-                        // Array to store continous group of 5 bytes, then we combine them to get the original byte
-                        uint8_t buff5[5] = {0};
-                        // uint16_t variable to store the original byte
-                        uint16_t buff16 = 0;
-                        // Counter for buff5
-                        int count5 = 0;
-                        // Index for imageArray to determine where to store the next byte
-                        int index = 0;
-                        // Read all data from server
-                        while (http.connected() && (len > 0 || len == -1)) {
-                            // get available data size
-                            size_t size = stream->available();
-                            if (size) {
-                                // Count the number of bytes read
-                                count += size;
-                                // Print size to Serial with line break
-                                Serial.printf("Size available: %d\n", size);
-                                Serial.println();
-                                // read up to 128 byte
-                                int c = stream->readBytes(buff, std::min((size_t) len, sizeof(buff)));
-                                for (int i = 0; i < c; i++) {
-                                    //Serial.printf("%02X ", buff[i]);
-                                    // Print as char
-                                    //Serial.printf("%c", buff[i]);
-                                    // Start reading when we meet a digit
-                                    // Check if buff[i] is in range of 0-9, if yes, store it to buff5
-                                    if (buff[i] >= 48 && buff[i] <= 57) {
-                                        // Store buff[i] to buff5
-                                        buff5[count5] = buff[i];
-                                        // Increase count5
-                                        count5++;
-                                    } else if (buff[i] == 44) {
-                                        // If we meet comma
-                                        // Convert buff5 to uint16_t
-                                        buff16 = (uint16_t) strtol((char *) buff5, NULL, 10);
-                                        // Print buff16 to Serial as DEC
-                                        Serial.printf("%d ", buff16);
-                                        // Reset buff5
-                                        memset(buff5, 0, sizeof(buff5));
-                                        // Reset count5
-                                        count5 = 0;
-                                        // Write buff16 to imageArray
-                                        imageArray[index] = buff16;
-                                        // Increase index
-                                        index++;
-                                    }
-
-                                }
-                                if (len > 0) {
-                                    len -= c;
-                                }
-                            }
-                            Serial.println();
-                            delay(1);
-                        }
-                        Serial.println();
-                        // Show count value
-                        Serial.printf("Bytes count: %d\n", count);
-                        // Show index value
-                        Serial.printf("Index: %d\n", index);
-                        Serial.println();
-                        Serial.println("End of stream");
-                        // Print imageArray to Serial, the array is in uint16_t format
-//                for (int i = 0; i < sizeof(imageArray); i++) {
-//                    Serial.printf("%02X ", imageArray[i]);
-//                }
-                        Serial.println();
-                        tft.setTextColor(TFT_WHITE, TFT_BLACK);
-                        tft.drawString("Loading image...", 0, 0);
-                        // Loading animation
-                        for (int i = 0; i < 100; i++) {
-                            tft.drawPixel(i, 10, TFT_WHITE);
-                            delay(10);
-                        }
-                        // Clearing the screen
-                        tft.fillScreen(TFT_BLACK);
-                        // Swap the colour byte order when rendering
-                        tft.setSwapBytes(true);
-                        // Display the image
-                        //tft.pushImage(0, 0, 100, 100, img);
-                        // Display the image
-                        tft.pushImage(0, 0, 100, 100, imageArray);
-                    }
-                } else {
-                    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-                }
-                // Done
-                Serial.println("Done");
-                http.end();
-                return true;
-            } else {
-                Serial.println("Failed to connect to the server");
-                return false;
-            }
-            break;
-        case 1:
-            // Using reading stream of bytes
-            Serial.println("Downloading image data using stream of bytes...");
-            Serial.print("URL: ");
-            Serial.println(url);
-            Serial.print("Filename: ");
-            Serial.println(filename);
-
-            if (http.begin(client, url)) {
-                Serial.print("[HTTP] GET...\n");
-                // start connection and send HTTP header
-                int httpCode = http.GET();
-
-                // httpCode will be negative on error
-                if (httpCode > 0) {
-                    // HTTP header has been send and Server response header has been handled
-                    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-                    tft.fillScreen(TFT_BLACK);
-                    tft.setTextColor(TFT_WHITE, TFT_BLACK);
-                    //Print http code on TFT
-                    tft.drawString("HTTP code: " + String(httpCode), 0, 0);
-                    // Waiting for 5 seconds, then make loading animation, then display the image
-                    delay(2000);
-                    tft.fillScreen(TFT_BLACK);
-                    // file found at server
-                    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-                        // get length of document (is -1 when Server sends no Content-Length header)
-                        int len = http.getSize();
-                        // Print size to Serial
-                        Serial.printf("Image Size: %d\n", len);
-                        // Variable to count the number of bytes read
-                        int count = 0;
-                        WiFiClient *stream = http.getStreamPtr();
-                        // Buffer to read
-                        uint8_t buff[128] = {0};
-                        // Array to store continuous group of 2 bytes, then we combine them to get the original byte
-                        uint8_t buff2[2] = {0};
-                        // uint16_t variable to store the original byte
-                        uint16_t buff16 = 0;
-                        // Index for imageArray to determine where to store the next byte
-                        int index = 0;
-                        // Read all data from server
-                        while (http.connected() && (len > 0 || len == -1)) {
-                            // get available data size
-                            size_t size = stream->available();
-                            // Count the number of bytes read
-                            count += size;
-                            // Print size to Serial with line break
-                            Serial.printf("Size available: %d\n", size);
-                            Serial.println();
-                            if (size) {
-                                // read up to 128 byte
-                                int c = stream->readBytes(buff, std::min((size_t) len, sizeof(buff)));
-                                int i = 0;
-                                while (i < c) {
-                                    // Print buff[i] to Serial as HEX
-                                    Serial.printf("%02X ", buff[i]);
-                                    Serial.printf("%02X ", buff[i + 1]);
-                                    // Print buff[i] to Serial as DEC
-                                    //Serial.printf("%d ", buff[i]);
-                                    // Add buff[i] and buff[i+1] to buff2
-                                    buff2[0] = buff[i];
-                                    buff2[1] = buff[i + 1];
-                                    // Concatenate buff2[0] and buff2[1] to 16-bit variable buff16
-                                    buff16 = (buff2[0] << 8) | buff2[1];
-                                    // Print buff16 to Serial as HEX
-                                    Serial.printf("%04X ", buff16);
-                                    // Print buff16 to Serial as DEC
-                                    //Serial.printf("%d ", buff16);
-                                    // Reset buff2
-                                    memset(buff2, 0, sizeof(buff2));
-                                    // Write buff16 to imageArray
-                                    //imageArray[index] = buff[i];
-                                    imageArray[index] = buff16;
-                                    // Increase index
-                                    index++;
-                                    // Increase i by 2
-                                    i += 2;
-                                }
-                                if (len > 0) {
-                                    len -= c;
-                                }
-                            }
-                            Serial.println();
-                            delay(1);
-                        }
-                        Serial.println();
-                        // Show count value
-                        Serial.printf("Bytes count: %d\n", count);
-                        // Show index value
-                        Serial.printf("Index: %d\n", index);
-                        Serial.println();
-                        Serial.println("End of stream");
-                        // Print imageArray to Serial, the array is in uint16_t format
-//                for (int i = 0; i < sizeof(imageArray); i++) {
-//                    Serial.printf("%02X ", imageArray[i]);
-//                }
-                        Serial.println();
-                        tft.setTextColor(TFT_WHITE, TFT_BLACK);
-                        tft.drawString("Loading image...", 0, 0);
-                        // Loading animation
-                        for (int i = 0; i < 100; i++) {
-                            tft.drawPixel(i, 10, TFT_WHITE);
-                            delay(10);
-                        }
-                        // Clearing the screen
-                        tft.fillScreen(TFT_BLACK);
-                        // Swap the colour byte order when rendering
-                        tft.setSwapBytes(true);
-                        // Display the image
-                        //tft.pushImage(0, 0, 100, 100, img);
-                        // Display the image
-                        tft.pushImage(0, 0, 100, 100, imageArray);
-                    }
-                } else {
-                    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-                }
-                // Done
-                Serial.println("Done");
-                http.end();
-                return true;
-            } else {
-                Serial.println("Failed to connect to the server");
-                return false;
-            }
-            break;
-        default:
-            Serial.println("No method indicated");
-            return false;
-    }
-}
-
 void NOT_FOUND_API(void) {
     String sms = "File Not Found\n\n";
     sms += "URI: ";
@@ -421,6 +124,227 @@ bool Submit_Machine(void) {
 /************************************************************************************************************************/
 bool Submit_Modbus(void) {
     return 1;
+}
+
+// function downloadImgData with params: (char *url, char *filename, byte method)
+bool web_function::downloadImageData(char *serverUrl, char *filename, byte method) {
+    // method variable is used to determine the way to read image data from server
+    // 0 means using reading JSON string, 1 means using reading stream of bytes
+    // Clear image array
+    memset(var.web.imageArray, 0, sizeof(var.web.imageArray));
+    // Concatenate serverUrl and filename to get full URL
+    strcat(serverUrl, filename);
+    // Print full URL to Serial
+    Serial.print("Full URL: ");
+    Serial.println(serverUrl);
+    switch (method) {
+        case 0:
+            // Using reading JSON string
+            Serial.println("Downloading image data using JSON string...");
+            Serial.print("URL: ");
+            Serial.println(serverUrl);
+            Serial.print("Filename: ");
+            Serial.println(filename);
+
+            if (http.begin(client, serverUrl)) {
+                Serial.print("[HTTP] GET...\n");
+                // start connection and send HTTP header
+                int httpCode = http.GET();
+                // httpCode will be negative on error
+                if (httpCode > 0) {
+                    // HTTP header has been send and Server response header has been handled
+                    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+                    // file found at server
+                    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+                        // get length of document (is -1 when Server sends no Content-Length header)
+                        int len = http.getSize();
+                        // Print size to Serial
+                        Serial.printf("Image Size: %d\n", len);
+                        // Variable to count the number of bytes read
+                        int count = 0;
+                        WiFiClient *stream = http.getStreamPtr();
+                        // Buffer to read
+                        uint8_t buff[128] = {0};
+                        // Array to store continous group of 5 bytes, then we combine them to get the original byte
+                        uint8_t buff5[5] = {0};
+                        // uint16_t variable to store the original byte
+                        uint16_t buff16 = 0;
+                        // Counter for buff5
+                        int count5 = 0;
+                        // Index for imageArray to determine where to store the next byte
+                        int index = 0;
+                        // Read all data from server
+                        while (http.connected() && (len > 0 || len == -1)) {
+                            // get available data size
+                            size_t size = stream->available();
+                            if (size) {
+                                // Count the number of bytes read
+                                count += size;
+                                // Print size to Serial with line break
+                                Serial.printf("Size available: %d\n", size);
+                                Serial.println();
+                                // read up to 128 byte
+                                int c = stream->readBytes(buff, std::min((size_t) len, sizeof(buff)));
+                                for (int i = 0; i < c; i++) {
+                                    //Serial.printf("%02X ", buff[i]);
+                                    // Print as char
+                                    //Serial.printf("%c", buff[i]);
+                                    // Start reading when we meet a digit
+                                    // Check if buff[i] is in range of 0-9, if yes, store it to buff5
+                                    if (buff[i] >= 48 && buff[i] <= 57) {
+                                        // Store buff[i] to buff5
+                                        buff5[count5] = buff[i];
+                                        // Increase count5
+                                        count5++;
+                                    } else if (buff[i] == 44) {
+                                        // If we meet comma
+                                        // Convert buff5 to uint16_t
+                                        buff16 = (uint16_t) strtol((char *) buff5, NULL, 10);
+                                        // Print buff16 to Serial as DEC
+                                        Serial.printf("%d ", buff16);
+                                        // Reset buff5
+                                        memset(buff5, 0, sizeof(buff5));
+                                        // Reset count5
+                                        count5 = 0;
+                                        // Write buff16 to imageArray
+                                        var.web.imageArray[index] = buff16;
+                                        // Increase index
+                                        index++;
+                                    }
+
+                                }
+                                if (len > 0) {
+                                    len -= c;
+                                }
+                            }
+                            Serial.println();
+                            delay(1);
+                        }
+                        Serial.println();
+                        // Show count value
+                        Serial.printf("Bytes count: %d\n", count);
+                        // Show index value
+                        Serial.printf("Index: %d\n", index);
+                        Serial.println();
+                        Serial.println("End of stream");
+                        Serial.println();
+                    }
+                } else {
+                    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+                }
+                // Done
+                Serial.println("Done");
+                http.end();
+                return true;
+            } else {
+                Serial.println("Failed to connect to the server");
+                return false;
+            }
+            break;
+        case 1:
+            // Using reading stream of bytes
+            Serial.println("Downloading image data using stream of bytes...");
+            Serial.print("URL: ");
+            Serial.println(serverUrl);
+            Serial.print("Filename: ");
+            Serial.println(filename);
+
+            if (http.begin(client, serverUrl)) {
+                Serial.print("[HTTP] GET...\n");
+                // start connection and send HTTP header
+                int httpCode = http.GET();
+
+                // httpCode will be negative on error
+                if (httpCode > 0) {
+                    // HTTP header has been send and Server response header has been handled
+                    Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+                    // file found at server
+                    if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
+                        // get length of document (is -1 when Server sends no Content-Length header)
+                        int len = http.getSize();
+                        // Print size to Serial
+                        Serial.printf("Image Size: %d\n", len);
+                        // Variable to count the number of bytes read
+                        int count = 0;
+                        WiFiClient *stream = http.getStreamPtr();
+                        // Buffer to read
+                        uint8_t buff[128] = {0};
+                        // Array to store continuous group of 2 bytes, then we combine them to get the original byte
+                        uint8_t buff2[2] = {0};
+                        // uint16_t variable to store the original byte
+                        uint16_t buff16 = 0;
+                        // Index for imageArray to determine where to store the next byte
+                        int index = 0;
+                        // Read all data from server
+                        while (http.connected() && (len > 0 || len == -1)) {
+                            // get available data size
+                            size_t size = stream->available();
+                            // Count the number of bytes read
+                            count += size;
+                            // Print size to Serial with line break
+                            Serial.printf("Size available: %d\n", size);
+                            Serial.println();
+                            if (size) {
+                                // read up to 128 byte
+                                int c = stream->readBytes(buff, std::min((size_t) len, sizeof(buff)));
+                                int i = 0;
+                                while (i < c) {
+                                    // Print buff[i] to Serial as HEX
+                                    Serial.printf("%02X ", buff[i]);
+                                    Serial.printf("%02X ", buff[i + 1]);
+                                    // Print buff[i] to Serial as DEC
+                                    //Serial.printf("%d ", buff[i]);
+                                    // Add buff[i] and buff[i+1] to buff2
+                                    buff2[0] = buff[i];
+                                    buff2[1] = buff[i + 1];
+                                    // Concatenate buff2[0] and buff2[1] to 16-bit variable buff16
+                                    buff16 = (buff2[0] << 8) | buff2[1];
+                                    // Print buff16 to Serial as HEX
+                                    Serial.printf("%04X ", buff16);
+                                    // Print buff16 to Serial as DEC
+                                    //Serial.printf("%d ", buff16);
+                                    // Reset buff2
+                                    memset(buff2, 0, sizeof(buff2));
+                                    // Write buff16 to imageArray
+                                    //imageArray[index] = buff[i];
+                                    var.web.imageArray[index] = buff16;
+                                    // Increase index
+                                    index++;
+                                    // Increase i by 2
+                                    i += 2;
+                                }
+                                if (len > 0) {
+                                    len -= c;
+                                }
+                            }
+                            Serial.println();
+                            delay(1);
+                        }
+                        Serial.println();
+                        // Show count value
+                        Serial.printf("Bytes count: %d\n", count);
+                        // Show index value
+                        Serial.printf("Index: %d\n", index);
+                        Serial.println();
+                        Serial.println("End of stream");
+                        Serial.println();
+                    }
+                } else {
+                    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+                }
+                // Done
+                Serial.println("Done");
+                http.end();
+                return true;
+            } else {
+                Serial.println("Failed to connect to the server");
+                return false;
+            }
+            break;
+        default:
+            Serial.println("No method indicated");
+            return false;
+    }
 }
 
 /************************************************************************************************************************/
