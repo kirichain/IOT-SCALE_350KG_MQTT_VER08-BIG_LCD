@@ -132,22 +132,25 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
     // 0 means using reading JSON string, 1 means using reading stream of bytes
     // Clear image array
     memset(var.web.imageArray, 0, sizeof(var.web.imageArray));
+    // Clear _serverUrl array
+    memset(var.web._serverUrl, 0, sizeof(var.web._serverUrl));
+    // Copy serverUrl to _serverUrl
+    strcpy(var.web._serverUrl, serverUrl);
     // Concatenate serverUrl and filename to get full URL
-    char *_serverUrl = serverUrl; 
-    strcat(_serverUrl, filename);
+    strcat(var.web._serverUrl, filename);
     // Print full URL to Serial
     Serial.print("Full URL: ");
-    Serial.println(_serverUrl);
+    Serial.println(var.web._serverUrl);
     switch (method) {
         case 0:
             // Using reading JSON string
             Serial.println("Downloading image data using JSON string...");
             Serial.print("URL: ");
-            Serial.println(_serverUrl);
+            Serial.println(var.web._serverUrl);
             Serial.print("Filename: ");
             Serial.println(filename);
 
-            if (http.begin(client, _serverUrl)) {
+            if (http.begin(client, var.web._serverUrl)) {
                 Serial.print("[HTTP] GET...\n");
                 // start connection and send HTTP header
                 int httpCode = http.GET();
@@ -246,11 +249,11 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
             // Using reading stream of bytes
             Serial.println("Downloading image data using stream of bytes...");
             Serial.print("URL: ");
-            Serial.println(_serverUrl);
+            Serial.println(var.web._serverUrl);
             Serial.print("Filename: ");
             Serial.println(filename);
 
-            if (http.begin(client, _serverUrl)) {
+            if (http.begin(client, var.web._serverUrl)) {
                 Serial.print("[HTTP] GET...\n");
                 // start connection and send HTTP header
                 int httpCode = http.GET();

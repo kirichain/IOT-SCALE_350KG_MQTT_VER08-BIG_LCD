@@ -184,7 +184,7 @@ void loop() {
     ESP.wdtFeed();
     function_loop();
     // Check if 2 mins have passed using millis() and previous_time variable
-    if (millis() - previous_time >= 120000) {
+    if (millis() - previous_time >= 60000) {
         previous_time = millis();
         // Check if we are connected to the Wifi
         if (var.wifi.STATUS == 1) {

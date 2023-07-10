@@ -250,6 +250,7 @@ typedef struct WEB {
     // Array to store the image, image size is 100x100
     uint16_t imageArray[14400] = {0};
     char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+    char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
     char filename[10] = "arr";
 } WEB;
 /************************************************************************************************************************/
