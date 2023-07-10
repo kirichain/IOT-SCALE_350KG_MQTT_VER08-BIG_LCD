@@ -133,7 +133,7 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
     // Clear image array
     memset(var.web.imageArray, 0, sizeof(var.web.imageArray));
     // Concatenate serverUrl and filename to get full URL
-    char _serverUrl[100] = serverUrl; 
+    char *_serverUrl = serverUrl; 
     strcat(_serverUrl, filename);
     // Print full URL to Serial
     Serial.print("Full URL: ");
