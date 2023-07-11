@@ -8,7 +8,7 @@
 class lcd_tft
 {
   public:
-    void displayDownloadedImageData();
+    void displayDownloadedImageData(byte x, byte y, byte w, byte h);
     void oled_init(void);//ham cai dat oled
     void fresh(void);
     void logo_wifi(int rssi);//hien thi cuong do wifi

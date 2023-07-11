@@ -190,10 +190,11 @@ void loop() {
         if (var.wifi.STATUS == 1) {
             Serial.println("Wifi connected");
             // Start downloading image data
-            if (web.downloadImageData(var.web.serverUrl, var.web.filename, 0)) {
+            if (web.downloadImageData(var.web.serverUrl, var.web.filename, 1)) {
                 Serial.println("Image downloaded");
                 // Display the image
-                lcd.displayDownloadedImageData();
+                //lcd.displayDownloadedImageData(0, 200, 120, 120);
+                lcd.displayDownloadedImageData(0, 200, 100, 100);
             } else {
                 Serial.println("Image download failed");
             }

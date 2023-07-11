@@ -248,10 +248,15 @@ typedef struct WEB {
     bool STATUS;
     bool Config = 0;
     // Array to store the image, image size is 100x100
-    uint16_t imageArray[14400] = {0};
-    char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
-    char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
-    char filename[10] = "arr";
+    uint16_t imageArray[10000] = {0};
+    // Array to store the image, image size is 120x120
+    //uint16_t imageArray[14400] = {0};
+    //char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+    //char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+    //char filename[10] = "arr";
+    char serverUrl[100] = "http://10.102.40.119:80/ProcessImage/GetDataImage";
+    char _serverUrl[100] = "http://10.102.40.119:80/ProcessImage/GetDataImage";
+    char filename[10] = "";
 } WEB;
 /************************************************************************************************************************/
 //cau truc bien can cua MACHINE STATUS

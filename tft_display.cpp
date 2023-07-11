@@ -7,13 +7,13 @@
 TFT_eSPI tft = TFT_eSPI(); // Khai báo đối tượng màn hình TFT
 
 // Display downloaded image data
-void lcd_tft::displayDownloadedImageData() {
+void lcd_tft::displayDownloadedImageData(byte x, byte y, byte w, byte h) {
     // Get image data array from var.web.imageArray
     uint16_t *img = (uint16_t *) var.web.imageArray;
     // Swap the colour byte order when rendering
     tft.setSwapBytes(true);
     // Draw image data array to TFT
-    tft.pushImage(0, 200, 120, 120, img);
+    tft.pushImage(x, y, w, h, img);
     // Serial
     Serial.println("Display downloaded image data");
 }

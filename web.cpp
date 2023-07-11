@@ -294,28 +294,31 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
                                 int i = 0;
                                 while (i < c) {
                                     // Print buff[i] to Serial as HEX
-                                    Serial.printf("%02X ", buff[i]);
-                                    Serial.printf("%02X ", buff[i + 1]);
+                                    //Serial.printf("%02X ", buff[i]);
+                                    //Serial.printf("%02X ", buff[i + 1]);
                                     // Print buff[i] to Serial as DEC
-                                    //Serial.printf("%d ", buff[i]);
+                                    Serial.printf("%d ", buff[i]);
                                     // Add buff[i] and buff[i+1] to buff2
                                     buff2[0] = buff[i];
                                     buff2[1] = buff[i + 1];
+                                    buff16 = 0;
                                     // Concatenate buff2[0] and buff2[1] to 16-bit variable buff16
                                     buff16 = (buff2[0] << 8) | buff2[1];
                                     // Print buff16 to Serial as HEX
-                                    Serial.printf("%04X ", buff16);
+                                    //Serial.printf("%04X ", buff16);
                                     // Print buff16 to Serial as DEC
-                                    //Serial.printf("%d ", buff16);
+                                    Serial.printf("%d ", buff16);
                                     // Reset buff2
                                     memset(buff2, 0, sizeof(buff2));
                                     // Write buff16 to imageArray
-                                    //imageArray[index] = buff[i];
+                                    //var.web.imageArray[index] = buff[i];
                                     var.web.imageArray[index] = buff16;
                                     // Increase index
                                     index++;
                                     // Increase i by 2
                                     i += 2;
+                                    // Increase i by 1
+                                    //i += 1;
                                 }
                                 if (len > 0) {
                                     len -= c;
