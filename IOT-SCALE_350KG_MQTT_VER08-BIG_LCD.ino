@@ -38,7 +38,6 @@ void setup() {
     //Setup Io
 
     if (!Expander.begin(0x20, &Wire)) ESP.reset();
-    Serial.begin(921600);
     Expander.pinMode(KEY_ENTER, INPUT);
     Expander.pinMode(KEY_UP, INPUT);
     Expander.pinMode(IN_SAMPLE, INPUT);
@@ -184,7 +183,7 @@ void loop() {
     ESP.wdtFeed();
     function_loop();
     // Check if 2 mins have passed using millis() and previous_time variable
-    if (millis() - previous_time >= 60000) {
+    if (millis() - previous_time >= 30000) {
         previous_time = millis();
         // Check if we are connected to the Wifi
         if (var.wifi.STATUS == 1) {

@@ -254,8 +254,8 @@ typedef struct WEB {
     //char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
     //char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
     //char filename[10] = "arr";
-    char serverUrl[100] = "http://10.102.40.119:80/ProcessImage/GetDataImage";
-    char _serverUrl[100] = "http://10.102.40.119:80/ProcessImage/GetDataImage";
+    char serverUrl[100] = "http://10.102.40.171:80/ProcessImage/GetDataImage";
+    char _serverUrl[100] = "http://10.102.40.171:80/ProcessImage/GetDataImage";
     char filename[10] = "";
 } WEB;
 /************************************************************************************************************************/
