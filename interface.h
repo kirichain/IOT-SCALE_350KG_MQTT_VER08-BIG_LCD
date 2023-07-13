@@ -217,8 +217,8 @@ typedef struct LCD {
 //cau truc bien can cua WIFI
 typedef struct WIFI {
     bool STATUS;
-    String ssid = "Guest";
-    String pass = "24091995";
+    String ssid = "SFS OFFICE";
+    String pass = "sfs#office!@";
     char eepSsid[16];
     char eepPass[16];
     uint8_t Strenght;
@@ -247,15 +247,15 @@ typedef struct WEB {
     String imageUrl = "";
     bool STATUS;
     bool Config = 0;
+    // Array to store the image, image size is 120x120
+//    uint16_t imageArray[14400] = {0};
+//    char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+//    char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
+//    char filename[10] = "arr";
     // Array to store the image, image size is 100x100
     uint16_t imageArray[10000] = {0};
-    // Array to store the image, image size is 120x120
-    //uint16_t imageArray[14400] = {0};
-    //char serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
-    //char _serverUrl[100] = "http://64a77ed6096b3f0fcc815dc3.mockapi.io/api/8bit/";
-    //char filename[10] = "arr";
-    char serverUrl[100] = "http://10.102.40.171:80/ProcessImage/GetDataImage";
-    char _serverUrl[100] = "http://10.102.40.171:80/ProcessImage/GetDataImage";
+    char serverUrl[150] = "http://mespk2.pungkookvn.com:8888/mpmts/minimizeImage?url=http://203.113.151.204:8080/PKPDM/style/ESP/ESP3985/Images/ESP39851.jpg";
+    char _serverUrl[150] = "http://mespk2.pungkookvn.com:8888/mpmts/minimizeImage?url=http://203.113.151.204:8080/PKPDM/style/ESP/ESP3985/Images/ESP39851.jpg";
     char filename[10] = "";
 } WEB;
 /************************************************************************************************************************/

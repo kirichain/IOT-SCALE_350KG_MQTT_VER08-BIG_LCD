@@ -1,10 +1,110 @@
-#include <TFT_eSPI.h>
-
 #include <arduino.h>
 #include "tft_display.h"
 
 //extern const uint8_t Large72RLE[];
 TFT_eSPI tft = TFT_eSPI(); // Khai báo đối tượng màn hình TFT
+
+// Display default style image
+void lcd_tft::displayDefaultStyleImage() {
+    // Draw the background of bag with color white
+    tft.fillRoundRect(0, 220, 100, 100, 10, TFT_WHITE);
+    // Draw a bag with color black inside the background
+    tft.fillRoundRect(10, 230, 80, 40, 10, TFT_BLACK);
+    // Draw the handle of bag with color black
+    tft.fillRoundRect(40, 230, 20, 10, 5, TFT_BLACK);
+}
+
+// Check QC indicator display
+// Check QC indicator display by blink between states: Passed and Defect
+void lcd_tft::checkQcDisplay() {
+    // Display QC indicator with state: Passed and blink it for 3 seconds
+    for (int i = 0; i < 3; i++) {
+        displayQcIndicator(120, 245, 40, 40, 1);
+        delay(300);
+        displayQcIndicator(120, 245, 40, 40, 1);
+        delay(300);
+    }
+    // Display QC indicator with state: Defect and blink it for 3 seconds
+    for (int i = 0; i < 3; i++) {
+        displayQcIndicator(120, 245, 40, 40, 2);
+        delay(300);
+        displayQcIndicator(120, 245, 40, 40, 2);
+        delay(300);
+    }
+    // Display QC indicator with no state and blink it for 5 seconds
+    for (int i = 0; i < 5; i++) {
+        displayQcIndicator(120, 245, 40, 40, 0);
+        delay(300);
+        displayQcIndicator(120, 245, 40, 40, 0);
+        delay(300);
+    }
+}
+
+// Display QC indicator
+void lcd_tft::displayQcIndicator(byte x, byte y, byte w, byte h, byte qcResult) {
+    switch (qcResult) {
+        // Clear display area
+        tft.fillRect(x, y, w, h, TFT_BLACK);
+        // Clear QC strings
+        //tft.fillRect(x, y + h, w, 40, TFT_BLACK);
+        // Display QC with no any state
+        case 0:
+            // Draw a circle with color yellow and the text center inside: "QC"
+            tft.fillCircle(x + w / 2, y + h / 2, w / 2, TFT_YELLOW);
+            //tft.setTextColor(TFT_WHITE, TFT_BLACK);
+            //tft.setFreeFont(&FreeSansBoldOblique72pt7b);
+            // Draw string below the circle
+            //tft.drawString("QC", x + w / 2 - 120, y + h / 2 - 60);
+            break;
+        // Display QC with pass state
+        case 1:
+            // Draw a circle with color green and the text center inside: "PASS"
+            tft.fillCircle(x + w / 2, y + h / 2, w / 2, TFT_GREEN);
+            //tft.setTextColor(TFT_GREEN, TFT_BLACK);
+            //tft.setFreeFont(&FreeSansBoldOblique72pt7b);
+            // Draw string below the circle
+            //tft.drawString("PASS", x + w / 2 - 120, y + h / 2 - 60);
+            break;
+        // Display QC with defect state
+        case 2:
+            // Draw a circle with color red and the text center inside: "DEFECT"
+            tft.fillCircle(x + w / 2, y + h / 2, w / 2, TFT_RED);
+            //tft.setTextColor(TFT_RED, TFT_BLACK);
+            //tft.setFreeFont(&FreeSansBoldOblique72pt7b);
+            // Draw string below the circle
+            //tft.drawString("DEFECT", x + w / 2 - 180, y + h / 2 - 60);
+            break;
+        default:
+            break;
+    }
+}
+
+// Display line "Downloading image data" with color green
+void lcd_tft::displayImageDataDownloadStatus(byte x, byte y, byte w, byte h) {
+    // Clear display area
+    tft.fillRect(x, y, w, h, TFT_BLACK);
+    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    tft.setFreeFont(&FreeSerifItalic9pt7b);
+    tft.drawString("Downloading image data", x, y);
+}
+
+// Animation for waiting downloading image data, using loading bar, 0-100% for 8s
+void lcd_tft::displayDownloadedImageAnimation(byte x, byte y, byte w, byte h) {
+    // Clear string
+    tft.setTextColor(TFT_BLACK, TFT_BLACK);
+    tft.drawString("Downloading image data", x, y);
+    // Clear display area
+    tft.fillRect(x, y, w, h, TFT_BLACK);
+    // Draw loading bar with color green
+    tft.fillRect(x, y, w, h / 2, TFT_WHITE);
+    tft.fillRect(x, y, w, h / 2, TFT_BLACK);
+    for (byte i = 0; i < 100; i++) {
+        tft.fillRect(x, y, w * i / 100, h / 2, TFT_GREEN);
+        delay(80);
+    }
+    // Clear display area
+    tft.fillRect(x, y, w, h, TFT_BLACK);
+}
 
 // Display downloaded image data
 void lcd_tft::displayDownloadedImageData(byte x, byte y, byte w, byte h) {

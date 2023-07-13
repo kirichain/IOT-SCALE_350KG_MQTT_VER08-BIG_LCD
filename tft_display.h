@@ -8,6 +8,11 @@
 class lcd_tft
 {
   public:
+    void displayDefaultStyleImage();
+    void checkQcDisplay();
+    void displayQcIndicator(byte x, byte y, byte w, byte h, byte qcResult);
+    void displayImageDataDownloadStatus(byte x, byte y, byte w, byte h);
+    void displayDownloadedImageAnimation(byte x, byte y, byte w, byte h);
     void displayDownloadedImageData(byte x, byte y, byte w, byte h);
     void oled_init(void);//ham cai dat oled
     void fresh(void);

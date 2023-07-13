@@ -179,6 +179,12 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
                         int index = 0;
                         // Read all data from server
                         while (http.connected() && (len > 0 || len == -1)) {
+                            // Break if len = -1
+                            if (len == -1) {
+                                // Announce that no Content-Length header is sent
+                                Serial.println("No Content-Length header is sent. Stop now");
+                                return false;
+                            }
                             // get available data size
                             size_t size = stream->available();
                             if (size) {
@@ -281,6 +287,12 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
                         int index = 0;
                         // Read all data from server
                         while (http.connected() && (len > 0 || len == -1)) {
+                            // Break if len = -1
+                            if (len == -1) {
+                                // Announce that no Content-Length header is sent
+                                Serial.println("No Content-Length header is sent. Stop now");
+                                return false;
+                            }
                             // get available data size
                             size_t size = stream->available();
                             // Count the number of bytes read
@@ -297,7 +309,7 @@ bool web_function::downloadImageData(char *serverUrl, char *filename, byte metho
                                     //Serial.printf("%02X ", buff[i]);
                                     //Serial.printf("%02X ", buff[i + 1]);
                                     // Print buff[i] to Serial as DEC
-                                    Serial.printf("%d ", buff[i]);
+                                    //Serial.printf("%d ", buff[i]);
                                     // Add buff[i] and buff[i+1] to buff2
                                     buff2[0] = buff[i];
                                     buff2[1] = buff[i + 1];

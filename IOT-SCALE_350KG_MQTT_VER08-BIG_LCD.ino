@@ -138,8 +138,8 @@ void setup() {
     var.wifi.STATUS = 0;
     //  var.wifi.ssid = "PKMchine";
     //  var.wifi.pass = "IOT2018";
-    //  var.wifi.ssid = "SFS OFFICE";
-    //  var.wifi.pass = "sfs#office!@";
+    //var.wifi.ssid = "SFS OFFICE";
+    //var.wifi.pass = "sfs#office!@";
     //  var.mqtt.Address = "125.234.135.55";
     var.mqtt.Port = 1883;
     var.mqtt.Connected = 0;
@@ -177,6 +177,11 @@ void setup() {
     __asm__ __volatile__ ("nop\n\t");
     __asm__ __volatile__ ("nop\n\t");
     __asm__ __volatile__ ("nop\n\t");
+
+    // Display default style image
+    lcd.displayDefaultStyleImage();
+    // QC display check
+    lcd.checkQcDisplay();
 }
 
 void loop() {
@@ -187,15 +192,20 @@ void loop() {
         previous_time = millis();
         // Check if we are connected to the Wifi
         if (var.wifi.STATUS == 1) {
-            Serial.println("Wifi connected");
+            Serial.println("Wifi connected. Start downloading image");
+            //lcd.displayImageDataDownloadStatus(0, 200, 120, 120);
+            lcd.displayImageDataDownloadStatus(0, 220, 100, 100);
             // Start downloading image data
             if (web.downloadImageData(var.web.serverUrl, var.web.filename, 1)) {
-                Serial.println("Image downloaded");
+                Serial.println("Image downloaded. Start displaying");
+                // Display the image downloading animation
+                //lcd.displayDownloadedImageAnimation(0, 200, 120, 120);
+                lcd.displayDownloadedImageAnimation(0, 220, 100, 100);
                 // Display the image
                 //lcd.displayDownloadedImageData(0, 200, 120, 120);
-                lcd.displayDownloadedImageData(0, 200, 100, 100);
+                lcd.displayDownloadedImageData(0, 220, 100, 100);
             } else {
-                Serial.println("Image download failed");
+                Serial.println("Image downloading failed");
             }
         } else {
             Serial.println("Wifi not connected");
